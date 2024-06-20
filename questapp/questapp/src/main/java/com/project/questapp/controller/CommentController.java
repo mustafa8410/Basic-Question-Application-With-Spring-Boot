@@ -25,7 +25,7 @@ public class CommentController {
 
     @GetMapping("/{commentId}")
     Comment getOneComment(@PathVariable Long commentId){
-        return commentService.getOnePost(commentId);
+        return commentService.getOneComment(commentId);
     }
 
     @PostMapping

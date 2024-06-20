@@ -40,7 +40,7 @@ public class CommentService {
         return commentRepository.findAllByPost(post);
     }
 
-    public Comment getOnePost(Long commentId) {
+    public Comment getOneComment(Long commentId) {
         Optional<Comment> comment = commentRepository.findById(commentId);
         if(comment.isPresent())
             return comment.get();
@@ -54,7 +54,6 @@ public class CommentService {
             return null;
         else{
             Comment newComment = new Comment();
-            newComment.setId(commentCreateRequest.getId());
             newComment.setText(commentCreateRequest.getText());
             newComment.setUser(userService.getOneUser(commentCreateRequest.getUserId()));
             newComment.setPost(postService.getOnePost(commentCreateRequest.getPostId()));

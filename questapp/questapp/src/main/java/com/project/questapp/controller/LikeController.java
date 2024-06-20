@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.project.questapp.request.LikeCreateRequest;
+import com.project.questapp.response.LikeResponse;
 import com.project.questapp.service.LikeService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,11 @@ public class LikeController {
 
     public LikeController(LikeService likeService) {
         this.likeService = likeService;
+    }
+
+    @GetMapping
+    public List<LikeResponse> getAllLikes(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId ){
+        return likeService.getAllLikesWithParam(userId, postId);
     }
 
     @PostMapping

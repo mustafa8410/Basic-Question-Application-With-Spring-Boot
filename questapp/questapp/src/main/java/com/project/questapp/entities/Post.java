@@ -11,12 +11,12 @@ import org.hibernate.annotations.OnDeleteAction;
 @Data
 public class Post {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //auto-increment id's in the database
     long id;
 
-    @ManyToOne (fetch = FetchType.LAZY) //many posts for one user
+    @ManyToOne (fetch = FetchType.EAGER) //many posts for one user
     @JoinColumn(name = "user_id", nullable = false) //foreign keyler bu şekilde saklanabilir
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
     User user;
 
     String title;

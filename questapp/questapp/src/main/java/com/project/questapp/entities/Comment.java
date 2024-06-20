@@ -11,6 +11,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Data
 public class Comment {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //auto-increment id's in the database
     long id;
 
     @ManyToOne (fetch = FetchType.LAZY)
