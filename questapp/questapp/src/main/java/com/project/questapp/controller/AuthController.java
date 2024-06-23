@@ -2,6 +2,7 @@ package com.project.questapp.controller;
 
 import com.project.questapp.entities.User;
 import com.project.questapp.request.UserRequest;
+import com.project.questapp.response.AuthResponse;
 import com.project.questapp.security.JwtTokenProvider;
 import com.project.questapp.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -21,10 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private AuthenticationManager authenticationManager;
-    private JwtTokenProvider tokenProvider;
-    private UserService userService;
-    private PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider tokenProvider;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthController(AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider, UserService userService, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
@@ -34,25 +35,31 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody UserRequest loginRequest){
+    public AuthResponse login(@RequestBody UserRequest loginRequest){
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword());
         Authentication auth = authenticationManager.authenticate(authToken);
         SecurityContextHolder.getContext().setAuthentication(auth);
         String jwtToken = tokenProvider.generateJwtToken(auth);
-        return "Bearer " + jwtToken; // auth header starts with "Bearer "
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setMessage("Bearer " + jwtToken);
+        authResponse.setUserId(userService.getOneUserByUserName(loginRequest.getUserName()).getId());
+        return authResponse; // auth header starts with "Bearer "
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserRequest registerRequest){
+    public ResponseEntity<AuthResponse> register(@RequestBody UserRequest registerRequest){
+        AuthResponse authResponse = new AuthResponse();
         if(userService.getOneUserByUserName(registerRequest.getUserName()) != null){
-            return new ResponseEntity<>("Username already in use.", HttpStatus.BAD_REQUEST);
+            authResponse.setMessage("Username already in use.");
+            return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
         }
         else{
             User user = new User();
             user.setUserName(registerRequest.getUserName());
             user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
             userService.saveOneUser(user);
-            return new ResponseEntity<>("User successfully registered.", HttpStatus.CREATED);
+            authResponse.setMessage("User successfully registered.");
+            return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
         }
     }
 

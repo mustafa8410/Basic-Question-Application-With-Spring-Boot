@@ -8,15 +8,16 @@ import com.project.questapp.request.CommentCreateRequest;
 import com.project.questapp.request.CommentUpdateRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CommentService {
 
-    private CommentRepository commentRepository;
-    private UserService userService;
-    private PostService postService;
+    private final CommentRepository commentRepository;
+    private final UserService userService;
+    private final PostService postService;
 
     public CommentService(CommentRepository commentRepository, UserService userService, PostService postService) {
         this.commentRepository = commentRepository;
@@ -42,9 +43,7 @@ public class CommentService {
 
     public Comment getOneComment(Long commentId) {
         Optional<Comment> comment = commentRepository.findById(commentId);
-        if(comment.isPresent())
-            return comment.get();
-        else return null;
+        return comment.orElse(null);
     }
 
     public Comment createOneComment(CommentCreateRequest commentCreateRequest) {
@@ -57,6 +56,7 @@ public class CommentService {
             newComment.setText(commentCreateRequest.getText());
             newComment.setUser(userService.getOneUser(commentCreateRequest.getUserId()));
             newComment.setPost(postService.getOnePost(commentCreateRequest.getPostId()));
+            newComment.setCreateDate(new Date());
             return commentRepository.save(newComment);
         }
     }
@@ -73,7 +73,6 @@ public class CommentService {
 
     public void deleteOneComment(Long commentId) {
         Optional<Comment> toDelete = commentRepository.findById(commentId);
-        if(toDelete.isPresent())
-            commentRepository.delete(toDelete.get());
+        toDelete.ifPresent(commentRepository::delete);
     }
 }

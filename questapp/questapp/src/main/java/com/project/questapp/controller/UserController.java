@@ -1,6 +1,7 @@
 package com.project.questapp.controller;
 
 import com.project.questapp.entities.User;
+import com.project.questapp.response.UserResponse;
 import com.project.questapp.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +27,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getOneUser(@PathVariable long userId){
-        return userService.getOneUser(userId);
+    public UserResponse getOneUser(@PathVariable long userId){
+        return userService.getUserResponseById(userId);
     }
 
     @PutMapping("/{userId}")
@@ -38,6 +39,11 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public void deleteOneUser(@PathVariable long userId){
         userService.deleteOneUser(userId);
+    }
+
+    @GetMapping("/activity/{userId}")
+    public List<Object> getUserActivity(@PathVariable long userId){
+        return userService.getUserActivity(userId);
     }
 
 }

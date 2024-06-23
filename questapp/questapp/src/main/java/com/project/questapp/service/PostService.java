@@ -1,20 +1,16 @@
 package com.project.questapp.service;
 
-import com.project.questapp.entities.Like;
 import com.project.questapp.entities.Post;
 import com.project.questapp.entities.User;
-import com.project.questapp.repository.LikeRepository;
 import com.project.questapp.repository.PostRepository;
 import com.project.questapp.request.PostCreateRequest;
 import com.project.questapp.request.PostUpdateRequest;
 import com.project.questapp.response.LikeResponse;
 import com.project.questapp.response.PostResponse;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,9 +18,9 @@ import java.util.stream.Collectors;
 @Service
 public class PostService {
 
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
     private LikeService likeService;
-    private UserService userService;
+    private final UserService userService;
 
     public PostService(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
@@ -45,12 +41,20 @@ public class PostService {
             postList = postRepository.findAll();
         }
         return postList.stream().map(p -> {
-            List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of(p.getId()));
+            List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.empty(), Optional.of(p.getId()));
             return new PostResponse(p, likes);
         }).collect(Collectors.toList());
     }
     public Post getOnePost( Long postId){
         return postRepository.findById(postId).orElse(null);
+    }
+
+    public PostResponse getOnePostWithLikes(Long postId){
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if(optionalPost.isEmpty()) return null;
+        Post post = optionalPost.get();
+        List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.empty(), Optional.of(postId));
+        return new PostResponse(post, likes);
     }
 
     public Post createOnePost(PostCreateRequest newPostRequest) {
@@ -62,6 +66,7 @@ public class PostService {
         toSave.setText(newPostRequest.getText());
         toSave.setTitle(newPostRequest.getTitle());
         toSave.setUser(user);
+        toSave.setCreateDate(new Date());
         return postRepository.save(toSave);
     }
 

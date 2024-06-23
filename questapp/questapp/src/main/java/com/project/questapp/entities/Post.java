@@ -6,6 +6,8 @@ import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "post")
 @Data
@@ -23,4 +25,7 @@ public class Post {
     @Lob //large object
     @Column (columnDefinition = "text") //it's a text, not varchar(255)
     String text;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createDate;
 }

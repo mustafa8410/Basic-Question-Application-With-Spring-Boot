@@ -20,7 +20,7 @@ import com.project.questapp.entities.Like;
 @RequestMapping("/likes")
 public class LikeController {
 
-    private LikeService likeService;
+    private final LikeService likeService;
 
     public LikeController(LikeService likeService) {
         this.likeService = likeService;

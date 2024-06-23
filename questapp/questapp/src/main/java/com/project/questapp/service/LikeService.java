@@ -17,9 +17,9 @@ import com.project.questapp.entities.User;
 @Service
 public class LikeService {
 
-    private LikeRepository likeRepository;
-    private UserService userService;
-    private PostService postService;
+    private final LikeRepository likeRepository;
+    private final UserService userService;
+    private final PostService postService;
 
     public LikeService(LikeRepository likeRepository, UserService userService,
                        PostService postService) {
