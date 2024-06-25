@@ -10,9 +10,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment,Long> {
-    List<Comment> findAllByPostAndUser(Post post, User user);
-    List<Comment> findAllByPost(Post post);
-    List<Comment> findAllByUser(User user);
+    List<Comment> findByUserIdAndPostId(Long userId, Long postId);
+
+    List<Comment> findByUserId(Long userId);
+
+    List<Comment> findByPostId(Long postId);
 
     @Query(value = "select 'commented on', c.post_id, u.avatar, u.user_name from "
             + "comment c left join user u on u.id = c.user_id "
